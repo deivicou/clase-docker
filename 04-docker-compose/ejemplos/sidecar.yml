@@ -1,0 +1,41 @@
+# Patrón Sidecar con Docker Compose
+#
+# El patrón Sidecar añade un contenedor auxiliar ("sidecar") junto al
+# contenedor principal para extender su funcionalidad sin modificarlo.
+#
+# Caso de uso típico: recoger logs del contenedor principal y enviarlos
+# a un servicio centralizado.
+#
+# Uso:
+#   docker compose -f sidecar.yml up -d
+
+services:
+
+  # ── Contenedor principal ──────────────────────────────────────────────────
+  app:
+    image: nginx:alpine
+    container_name: app-principal
+    volumes:
+      - logs-compartidos:/var/log/nginx    # comparte logs con el sidecar
+    networks:
+      - red-interna
+
+  # ── Sidecar: recolector de logs ───────────────────────────────────────────
+  log-collector:
+    image: busybox:latest
+    container_name: sidecar-logs
+    depends_on:
+      - app
+    volumes:
+      - logs-compartidos:/logs             # lee los mismos logs que la app
+    command: ["sh", "-c", "tail -f /logs/access.log"]
+    networks:
+      - red-interna
+
+# ── Redes ─────────────────────────────────────────────────────────────────
+networks:
+  red-interna:
+
+# ── Volúmenes ─────────────────────────────────────────────────────────────
+volumes:
+  logs-compartidos:

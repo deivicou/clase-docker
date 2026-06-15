@@ -1,0 +1,27 @@
+# Binarios de Go compilados
+*.exe
+*.out
+/bin/
+
+# Directorios de módulos Go
+vendor/
+
+# Variables de entorno y secretos
+.env
+.env.*
+*.pem
+*.key
+
+# Artefactos de Docker
+*.tar
+*.tar.gz
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Editores
+.vscode/
+.idea/
+*.swp
+*~

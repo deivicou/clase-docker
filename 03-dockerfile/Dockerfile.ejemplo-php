@@ -1,0 +1,29 @@
+# Dockerfile de ejemplo — Aplicación PHP con Apache
+#
+# Construir: docker build . -t miusuario/php-app:1.0
+# Ejecutar:  docker run -d -p 8080:80 miusuario/php-app:1.0
+
+FROM php:7.4-apache
+
+LABEL maintainer="admin@ejemplo.com" \
+      company="iesalixar" \
+      version="1.0"
+
+ENV APACHE_DOCUMENT_ROOT=/var/www/html
+
+WORKDIR /var/www/html
+
+# Instalar extensiones PHP y limpiar caché en la misma capa
+RUN apt-get update && apt-get install -y \
+    curl \
+    unzip \
+    libzip-dev \
+    && docker-php-ext-install zip pdo pdo_mysql \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copiar el código (al final para aprovechar la caché de capas anteriores)
+COPY . /var/www/html/
+
+EXPOSE 80
+
+CMD ["apache2-foreground"]

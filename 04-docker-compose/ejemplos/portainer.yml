@@ -1,0 +1,24 @@
+# Escenario: Portainer
+#
+# Interfaz gráfica web para gestionar contenedores Docker.
+# Acceder en: http://localhost:9000
+#
+# Uso:
+#   docker compose -f portainer.yml up -d
+
+services:
+
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: always
+    ports:
+      - "9000:9000"                              # UI web
+      - "9443:9443"                              # UI web HTTPS (opcional)
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock  # acceso al daemon Docker del host
+      - portainer-datos:/data                      # persistencia de configuración
+
+# ── Volúmenes ─────────────────────────────────────────────────────────────
+volumes:
+  portainer-datos:

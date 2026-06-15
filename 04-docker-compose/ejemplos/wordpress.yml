@@ -1,0 +1,53 @@
+# Escenario: WordPress + MySQL
+#
+# Levanta un WordPress completo con base de datos MySQL en red aislada.
+#
+# Uso:
+#   docker compose -f wordpress.yml up -d
+#   docker compose -f wordpress.yml down -v
+
+services:
+
+  # ── Base de datos MySQL ───────────────────────────────────────────────────
+  base-de-datos:
+    image: mysql:8.0
+    container_name: wordpress-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: wordpress_db
+      MYSQL_USER: wp_user
+      MYSQL_PASSWORD: wp_password
+      MYSQL_ROOT_PASSWORD: root_password
+    volumes:
+      - db-datos:/var/lib/mysql        # persistencia de la base de datos
+    networks:
+      - red-wordpress
+
+  # ── WordPress ─────────────────────────────────────────────────────────────
+  wordpress:
+    image: wordpress:latest
+    container_name: wordpress-app
+    restart: unless-stopped
+    depends_on:
+      - base-de-datos                  # espera a que MySQL esté arriba
+    ports:
+      - "8080:80"                      # acceder en http://localhost:8080
+    environment:
+      WORDPRESS_DB_HOST: base-de-datos:3306
+      WORDPRESS_DB_NAME: wordpress_db
+      WORDPRESS_DB_USER: wp_user
+      WORDPRESS_DB_PASSWORD: wp_password
+    volumes:
+      - wp-contenido:/var/www/html/wp-content   # temas, plugins y uploads
+    networks:
+      - red-wordpress
+
+# ── Redes ─────────────────────────────────────────────────────────────────
+networks:
+  red-wordpress:
+    driver: bridge
+
+# ── Volúmenes ─────────────────────────────────────────────────────────────
+volumes:
+  db-datos:
+  wp-contenido:

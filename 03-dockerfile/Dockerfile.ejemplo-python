@@ -1,0 +1,28 @@
+# Dockerfile de ejemplo — Aplicación Python con Flask
+#
+# Construir: docker build . -t miusuario/flask-app:1.0
+# Ejecutar:  docker run -d -p 5000:5000 miusuario/flask-app:1.0
+
+FROM python:3.11-slim
+
+LABEL maintainer="admin@ejemplo.com" \
+      version="1.0" \
+      description="Aplicación Flask de demostración"
+
+# Variables de entorno
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    APP_HOME=/app
+
+WORKDIR ${APP_HOME}
+
+# Instalar dependencias primero (mejor aprovechamiento de caché)
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copiar el código fuente
+COPY . .
+
+EXPOSE 5000
+
+CMD ["python", "app.py"]

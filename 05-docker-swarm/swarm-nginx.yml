@@ -1,0 +1,29 @@
+# Ejemplo de Stack para Docker Swarm
+#
+# Despliega un servicio Nginx con 3 réplicas en red overlay.
+#
+# Uso:
+#   docker stack deploy -c swarm-nginx.yml mi-stack
+#   docker stack services mi-stack
+#   docker service ps mi-stack_web
+
+services:
+
+  web:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    networks:
+      - red-publica
+    deploy:
+      replicas: 3                      # 3 instancias distribuidas entre nodos
+      update_config:
+        parallelism: 1                 # actualizar de 1 en 1 para evitar downtime
+        delay: 10s
+      restart_policy:
+        condition: on-failure          # reiniciar solo si el contenedor falla
+
+# ── Redes ─────────────────────────────────────────────────────────────────
+networks:
+  red-publica:
+    driver: overlay                    # necesaria para comunicar nodos del swarm
