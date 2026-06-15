@@ -1,5 +1,4 @@
-# 🐳 clase-docker
-
+# 🐳 Docker Básico
 Repositorio de apuntes y ejemplos prácticos del curso de Docker.  
 Cubre desde los fundamentos del sistema (namespaces, cgroups, chroot) hasta orquestación con Docker Swarm.
 
